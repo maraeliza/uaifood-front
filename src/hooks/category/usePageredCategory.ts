@@ -1,19 +1,24 @@
-'use client'
+"use client";
 
-import { api } from '@/lib/axios'
-import { Category, GetCategoryResponse, PaginationData } from '@/utils/interface'
-
-import { useQuery } from '@tanstack/react-query'
+import { Category, GetCategoryResponse } from "@/interfaces/category";
+import { PaginationData } from "@/interfaces/common";
+import { api } from "@/lib/axios";
+import { useQuery } from "@tanstack/react-query";
 
 interface Props {
-  page: number
-  limit: number
+  page: number;
+  limit: number;
+  description?: string;
 }
 
-async function getCategories({ page }: Props): Promise<GetCategoryResponse> {
+async function getCategories({
+  page,
+  limit,
+  description,
+}: Props): Promise<GetCategoryResponse> {
   try {
     const response = await api
-      .get(`/categories?page=${page}&limit=10`)
+      .get("/categories", { params: { page, limit, description } })
       .then((res) => res.data);
 
     const categories: Category[] = response.data;
@@ -40,11 +45,10 @@ async function getCategories({ page }: Props): Promise<GetCategoryResponse> {
   }
 }
 
-
-export function useCategories({ page, limit }: Props) {
+export function useCategories({ page, limit, description }: Props) {
   return useQuery({
-    queryKey: ['categories', { page, limit }],
+    queryKey: ["categories", { page, limit, description }],
     refetchOnWindowFocus: false,
-    queryFn: () => getCategories({ page, limit }),
-  })
+    queryFn: () => getCategories({ page, limit, description }),
+  });
 }

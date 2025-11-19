@@ -15,8 +15,8 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
-import { GenericTableProps } from "@/utils/interface";
 import { PaginationControls } from "../Pagination";
+import { GenericTableProps } from "@/interfaces/common";
 
 export function TableWithPagination<T extends Record<string, any>>({
   data,
@@ -27,7 +27,8 @@ export function TableWithPagination<T extends Record<string, any>>({
 }: GenericTableProps<T>) {
   const bg = useColorModeValue("white", "gray.800");
   const border = useColorModeValue("gray.200", "gray.700");
-
+  const theadBg = useColorModeValue("gray.50", "gray.700");
+  const hoverBg = useColorModeValue("gray.50", "gray.700");
   return (
     <Box
       bg={bg}
@@ -39,8 +40,7 @@ export function TableWithPagination<T extends Record<string, any>>({
       overflowX="auto"
     >
       <Table variant="simple" size="md">
-        {/* Cabeçalho */}
-        <Thead bg={useColorModeValue("gray.50", "gray.700")}>
+        <Thead bg={theadBg}>
           <Tr>
             {columns.map((col) => (
               <Th key={String(col.key)} fontWeight="bold">
@@ -51,7 +51,6 @@ export function TableWithPagination<T extends Record<string, any>>({
           </Tr>
         </Thead>
 
-        {/* Corpo da tabela */}
         <Tbody>
           {data.length === 0 ? (
             <Tr>
@@ -63,7 +62,7 @@ export function TableWithPagination<T extends Record<string, any>>({
             data.map((item, index) => (
               <Tr
                 key={index}
-                _hover={{ bg: useColorModeValue("gray.50", "gray.700") }}
+                _hover={{ bg: hoverBg }}
               >
                 {columns.map((col) => (
                   <Td key={String(col.key)}>
@@ -73,7 +72,6 @@ export function TableWithPagination<T extends Record<string, any>>({
                   </Td>
                 ))}
 
-                {/* Ações */}
                 <Td>
                   <Flex justify="center" gap={2}>
                     <IconButton

@@ -1,5 +1,3 @@
-import { TypeExpense } from './interfaces'
-
 export const normalizeCpfNumber = (value: string | undefined) => {
   if (!value) return ''
 
@@ -30,14 +28,4 @@ export const normalizePhoneNumber = (value: string | undefined) => {
 }
 export function isValidCEP(cep: string): boolean {
   return /^\d{8}$/.test(cep) || /^\d{5}-\d{3}$/.test(cep)
-}
-
-export const formatTypeExpense = (value: TypeExpense) => {
-  switch (value) {
-    case 'TRANSFER':
-      return 'Transferência'
-
-    default:
-      return 'Transferência'
-  }
 }

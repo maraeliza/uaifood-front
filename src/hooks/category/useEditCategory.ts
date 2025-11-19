@@ -1,8 +1,8 @@
 "use client";
 
 import { queryClient } from "@/context/ChakraProvider";
+import { CategoryEdit } from "@/interfaces/category";
 import { api } from "@/lib/axios";
-import { CategoryEdit } from "@/utils/interface";
 import { useToast } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";

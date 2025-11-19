@@ -18,6 +18,10 @@ export const schemaRecoverPassword = z.object({
     message: "Informe um email válido",
   }),
 });
+export const schemaCategory = z.object({
+  description: z.string().min(3, { message: "O nome da categoria é obrigatório" }),
+  color: z.string().optional()
+})
 export const schemaAddress = z.object({
   id: z.number().int().positive().optional(),
   street: z.string().min(3, { message: "A rua é obrigatória" }),
@@ -65,6 +69,7 @@ export const schemaUserEdit = z.object({
   }),
 });
 
+export type FormCategory = z.infer<typeof schemaCategory>;
 export type FormUserEdit = z.infer<typeof schemaUserEdit>;
 export type FormUser = z.infer<typeof schemaUserCadastro>;
 export type FormLogin = z.infer<typeof schemaLogin>;

@@ -17,7 +17,7 @@ export function useMutationLogin() {
         throw error;
       }
     },
-    onError: (error) => {
+    onError: (error: AxiosError<{ message: string; }, any>) => {
       const axiosError = error as AxiosError<{ message: string }>;
 
       const message =

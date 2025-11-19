@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Modal,
   ModalOverlay,
@@ -15,40 +13,37 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
-
-interface EditModalProps<T> {
-  isOpen: boolean;
-  onClose: () => void;
-  initialData: T | null; 
-  fieldKey: keyof T;
-  title?: string;
-  label?: string;
-  onSubmit: (updated: T) => void;
-  isPending: boolean
-}
+import { ColorInput } from "../ColorInput";
+import { EditModalProps } from "@/interfaces/common";
 
 export function EditModal<T extends Record<string, any>>({
   isOpen,
   onClose,
   initialData,
-  fieldKey,
+  fields,
   title = "Editar",
-  label = "Valor",
   onSubmit,
-  isPending
+  isPending,
 }: EditModalProps<T>) {
-  const [value, setValue] = useState("");
+  const [values, setValues] = useState<Record<string, any>>({});
 
   useEffect(() => {
     if (initialData) {
-      setValue(initialData[fieldKey] ?? "");
+      const initialValues: Record<string, any> = {};
+      fields.forEach((f) => {
+        initialValues[String(f.key)] = initialData[f.key] ?? "";
+      });
+      setValues(initialValues);
     }
-  }, [initialData, fieldKey]);
+  }, [initialData, fields]);
+
+  function handleChange(key: keyof T, value: any) {
+    setValues((prev) => ({ ...prev, [String(key)]: value }));
+  }
 
   function handleSubmit() {
     if (!initialData) return;
-    const updated = { ...initialData, [fieldKey]: value };
-    onSubmit(updated as T);
+    onSubmit({ ...initialData, ...values } as T);
     onClose();
   }
 
@@ -61,14 +56,34 @@ export function EditModal<T extends Record<string, any>>({
 
         <ModalBody>
           <VStack align="stretch" gap={4}>
-            <FormControl>
-              <FormLabel>{label}</FormLabel>
-              <Input
-                value={value}
-                onChange={(e) => setValue(e.target.value)}
-                placeholder="Digite aqui..."
-              />
-            </FormControl>
+            {fields.map((field) => {
+              const value = values[String(field.key)] ?? "";
+
+              if (field.type === "color") {
+                return (
+                  <FormControl key={String(field.key)}>
+                    <FormLabel>{field.label}</FormLabel>
+                    <ColorInput
+                      value={value}
+                      onChange={(val) => handleChange(field.key, val)}
+                      placeholder="Digite #RRGGBB ou cor"
+                    />
+                  </FormControl>
+                );
+              }
+
+              return (
+                <FormControl key={String(field.key)}>
+                  <FormLabel>{field.label}</FormLabel>
+                  <Input
+                    type={field.type ?? "text"}
+                    placeholder={field.placeholder ?? ""}
+                    value={value}
+                    onChange={(e) => handleChange(field.key, e.target.value)}
+                  />
+                </FormControl>
+              );
+            })}
           </VStack>
         </ModalBody>
 

@@ -1,3 +1,5 @@
+import { ZodSchema } from "zod";
+
 export type ResponseError = { message: string };
 
 export interface ApiResponseError {
@@ -29,17 +31,6 @@ export interface GenericTableProps<T> {
   pagination?: PaginationProps;
 }
 
-export interface CategoryAdd {
-  description: string;
-}
-export interface CategoryEdit extends CategoryAdd {
-  id: number;
-}
-export interface Category extends CategoryEdit{
-  createdAt: string;
-  updatedAt: string;
-}
-
 export interface PaginationData {
   currentPage: number;
   registerPerPage: number;
@@ -47,7 +38,28 @@ export interface PaginationData {
   lastPage: number;
 }
 
-export interface GetCategoryResponse {
-  categories: Category[];
-  pageData: PaginationData;
+export interface Field<T> {
+  key: keyof T;
+  label: string;
+  placeholder?: string;
+  type?: string;
+}
+
+export interface CreateModalProps<T> {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (data: T) => void;
+  schema: ZodSchema<T>;
+  fields: Field<T>[];
+  title?: string;
+  isPending?: boolean;
+}
+export interface EditModalProps<T> {
+  isOpen: boolean;
+  onClose: () => void;
+  initialData: T | null;
+  fields: Field<T>[];
+  title?: string;
+  onSubmit: (updated: T) => void;
+  isPending: boolean;
 }
