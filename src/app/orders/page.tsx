@@ -9,6 +9,7 @@ import { Order } from "@/interfaces/common";
 import { useOrders } from "@/hooks/orders/usePagered";
 import { useDeleteOrder } from "@/hooks/orders/useDelete";
 import { ViewItemsModal } from "./ViewItems";
+import { ProtectedRoute } from "@/context/ProtectedRoute";
 
 export default function OrdersPage() {
   const [page, setPage] = useState(1);
@@ -56,43 +57,45 @@ export default function OrdersPage() {
     );
 
   return (
-    <Center py={10}>
-      <VStack spacing={6} align="stretch" w="full">
-        <Heading size="lg">Pedidos</Heading>
+    <ProtectedRoute roles={["ADMIN"]}>
+      <Center py={10}>
+        <VStack spacing={6} align="stretch" w="full">
+          <Heading size="lg">Pedidos</Heading>
 
-        <TableWithPagination<Order>
-          data={data?.orders ?? []}
-          columns={columns}
-          onView={handleView}
-          onDelete={handleDeleteClick}
-          pagination={{
-            currentPage: data?.meta.currentPage ?? 1,
-            lastPage: data?.meta.lastPage ?? 1,
-            total: data?.meta.totalCountofRegisters ?? 0,
-            pageSize,
-            onPageChange: setPage,
-            onPageSizeChange: setPageSize,
-          }}
-          onEdit={function (item: Order): void {
-            throw new Error("Function not implemented.");
-          }}
-        />
+          <TableWithPagination<Order>
+            data={data?.orders ?? []}
+            columns={columns}
+            onView={handleView}
+            onDelete={handleDeleteClick}
+            pagination={{
+              currentPage: data?.meta.currentPage ?? 1,
+              lastPage: data?.meta.lastPage ?? 1,
+              total: data?.meta.totalCountofRegisters ?? 0,
+              pageSize,
+              onPageChange: setPage,
+              onPageSizeChange: setPageSize,
+            }}
+            onEdit={function (item: Order): void {
+              throw new Error("Function not implemented.");
+            }}
+          />
 
-        <ViewItemsModal
-          isOpen={isViewOpen}
-          onClose={() => setIsViewOpen(false)}
-          items={selectedOrder?.orderItems ?? []}
-        />
+          <ViewItemsModal
+            isOpen={isViewOpen}
+            onClose={() => setIsViewOpen(false)}
+            items={selectedOrder?.orderItems ?? []}
+          />
 
-        <ConfirmModal
-          isOpen={isDeleteOpen}
-          onClose={() => setIsDeleteOpen(false)}
-          onConfirm={handleConfirmDelete}
-          title="Excluir Pedido"
-          description={`Tem certeza que deseja excluir o pedido #${orderToDelete?.id}?`}
-          isPending={deleteMutation.isPending}
-        />
-      </VStack>
-    </Center>
+          <ConfirmModal
+            isOpen={isDeleteOpen}
+            onClose={() => setIsDeleteOpen(false)}
+            onConfirm={handleConfirmDelete}
+            title="Excluir Pedido"
+            description={`Tem certeza que deseja excluir o pedido #${orderToDelete?.id}?`}
+            isPending={deleteMutation.isPending}
+          />
+        </VStack>
+      </Center>
+    </ProtectedRoute>
   );
 }

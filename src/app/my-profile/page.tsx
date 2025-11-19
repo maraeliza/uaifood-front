@@ -11,6 +11,7 @@ import {
   SimpleGrid,
   useToast,
 } from "@chakra-ui/react";
+import { ProtectedRoute } from "@/context/ProtectedRoute";
 
 // Tipagem para usuário
 interface Address {
@@ -53,7 +54,7 @@ export default function MyProfile() {
   const handleChange = (
     field: keyof UserProfile | keyof Address,
     value: string,
-    isAddress = false,
+    isAddress = false
   ) => {
     if (isAddress) {
       setUserData((prev) => ({
@@ -91,94 +92,100 @@ export default function MyProfile() {
   };
 
   return (
-    <Box p={6} bg="gray.50" minH="100vh">
-      <Heading mb={6}>Meu Perfil</Heading>
-      <VStack spacing={6} align="stretch" maxW="800px" mx="auto">
-        {/* Dados pessoais */}
-        <Box p={4} bg="white" shadow="md" borderRadius="md">
-          <Heading size="md" mb={4}>
-            Informações Pessoais
-          </Heading>
-          <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
-            <FormControl>
-              <FormLabel>Nome</FormLabel>
-              <Input
-                value={userData.name}
-                onChange={(e) => handleChange("name", e.target.value)}
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel>Email</FormLabel>
-              <Input
-                value={userData.email}
-                onChange={(e) => handleChange("email", e.target.value)}
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel>Telefone</FormLabel>
-              <Input
-                value={userData.phone}
-                onChange={(e) => handleChange("phone", e.target.value)}
-              />
-            </FormControl>
-          </SimpleGrid>
-        </Box>
+    <ProtectedRoute roles={["ADMIN", "CLIENT"]}>
+      <Box p={6} bg="gray.50" minH="100vh">
+        <Heading mb={6}>Meu Perfil</Heading>
+        <VStack spacing={6} align="stretch" maxW="800px" mx="auto">
+          {/* Dados pessoais */}
+          <Box p={4} bg="white" shadow="md" borderRadius="md">
+            <Heading size="md" mb={4}>
+              Informações Pessoais
+            </Heading>
+            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+              <FormControl>
+                <FormLabel>Nome</FormLabel>
+                <Input
+                  value={userData.name}
+                  onChange={(e) => handleChange("name", e.target.value)}
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel>Email</FormLabel>
+                <Input
+                  value={userData.email}
+                  onChange={(e) => handleChange("email", e.target.value)}
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel>Telefone</FormLabel>
+                <Input
+                  value={userData.phone}
+                  onChange={(e) => handleChange("phone", e.target.value)}
+                />
+              </FormControl>
+            </SimpleGrid>
+          </Box>
 
-        {/* Endereço */}
-        <Box p={4} bg="white" shadow="md" borderRadius="md">
-          <Heading size="md" mb={4}>
-            Endereço
-          </Heading>
-          <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
-            <FormControl>
-              <FormLabel>Rua</FormLabel>
-              <Input
-                value={userData.address.street}
-                onChange={(e) => handleChange("street", e.target.value, true)}
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel>Número</FormLabel>
-              <Input
-                value={userData.address.number}
-                onChange={(e) => handleChange("number", e.target.value, true)}
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel>Bairro</FormLabel>
-              <Input
-                value={userData.address.district}
-                onChange={(e) => handleChange("district", e.target.value, true)}
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel>Cidade</FormLabel>
-              <Input
-                value={userData.address.city}
-                onChange={(e) => handleChange("city", e.target.value, true)}
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel>Estado</FormLabel>
-              <Input
-                value={userData.address.state}
-                onChange={(e) => handleChange("state", e.target.value, true)}
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel>CEP</FormLabel>
-              <Input
-                value={userData.address.zipCode}
-                onChange={(e) => handleChange("zipCode", e.target.value, true)}
-              />
-            </FormControl>
-          </SimpleGrid>
-        </Box>
+          {/* Endereço */}
+          <Box p={4} bg="white" shadow="md" borderRadius="md">
+            <Heading size="md" mb={4}>
+              Endereço
+            </Heading>
+            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+              <FormControl>
+                <FormLabel>Rua</FormLabel>
+                <Input
+                  value={userData.address.street}
+                  onChange={(e) => handleChange("street", e.target.value, true)}
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel>Número</FormLabel>
+                <Input
+                  value={userData.address.number}
+                  onChange={(e) => handleChange("number", e.target.value, true)}
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel>Bairro</FormLabel>
+                <Input
+                  value={userData.address.district}
+                  onChange={(e) =>
+                    handleChange("district", e.target.value, true)
+                  }
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel>Cidade</FormLabel>
+                <Input
+                  value={userData.address.city}
+                  onChange={(e) => handleChange("city", e.target.value, true)}
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel>Estado</FormLabel>
+                <Input
+                  value={userData.address.state}
+                  onChange={(e) => handleChange("state", e.target.value, true)}
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel>CEP</FormLabel>
+                <Input
+                  value={userData.address.zipCode}
+                  onChange={(e) =>
+                    handleChange("zipCode", e.target.value, true)
+                  }
+                />
+              </FormControl>
+            </SimpleGrid>
+          </Box>
 
-        <Button colorScheme="green" isLoading={isSaving} onClick={handleSave}>
-          Salvar Alterações
-        </Button>
-      </VStack>
-    </Box>
+          <Button colorScheme="green" isLoading={isSaving} onClick={handleSave}>
+            Salvar Alterações
+          </Button>
+        </VStack>
+      </Box>
+    </ProtectedRoute>
   );
 }

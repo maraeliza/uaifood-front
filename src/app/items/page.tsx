@@ -26,6 +26,7 @@ import { FormItem, schemaItem } from "@/utils/schema";
 import { columns, fields } from "./metaData";
 import { useAllCategories } from "@/hooks/category/useAll";
 import { Category } from "@/interfaces/category";
+import { ProtectedRoute } from "@/context/ProtectedRoute";
 
 export default function Page() {
   const [page, setPage] = useState(1);
@@ -85,98 +86,100 @@ export default function Page() {
     })) || [];
 
   const itemFields = fields.map((field) =>
-    field.key === "categoryId" ? { ...field, options: categoryOptions } : field,
+    field.key === "categoryId" ? { ...field, options: categoryOptions } : field
   );
 
   return (
-    <Center py={10}>
-      <VStack spacing={6} align="stretch" w="full" maxW="1200px">
-        <HStack justify="space-between">
-          <Heading size="lg">Itens</Heading>
-          <Button colorScheme="teal" onClick={() => setIsCreateOpen(true)}>
-            Novo Item
-          </Button>
-        </HStack>
+    <ProtectedRoute roles={["ADMIN"]}>
+      <Center py={10}>
+        <VStack spacing={6} align="stretch" w="full" maxW="1200px">
+          <HStack justify="space-between">
+            <Heading size="lg">Itens</Heading>
+            <Button colorScheme="teal" onClick={() => setIsCreateOpen(true)}>
+              Novo Item
+            </Button>
+          </HStack>
 
-        <HStack spacing={4} align="stretch">
-          <Input
-            placeholder="Filtrar por descrição..."
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            size="md"
-            bg="white"
-            _dark={{ bg: "gray.700" }}
-            focusBorderColor="teal.400"
-            maxW="400px"
+          <HStack spacing={4} align="stretch">
+            <Input
+              placeholder="Filtrar por descrição..."
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              size="md"
+              bg="white"
+              _dark={{ bg: "gray.700" }}
+              focusBorderColor="teal.400"
+              maxW="400px"
+            />
+            <Box maxW="250px">
+              <select
+                className="chakra-select css-1o9g701"
+                onChange={(e) =>
+                  setSelectedCategoryId(
+                    e.target.value ? parseInt(e.target.value) : undefined
+                  )
+                }
+                value={selectedCategoryId || ""}
+              >
+                <option value="">Todas as Categorias</option>
+                {categories?.map((c: Category) => (
+                  <option key={c.id} value={c.id}>
+                    {c.description}
+                  </option>
+                ))}
+              </select>
+            </Box>
+          </HStack>
+
+          <TableWithPagination
+            data={data?.data ?? []}
+            columns={columns}
+            onEdit={(item) => handleEdit(item as Item)}
+            onDelete={(item) => handleDeleteClick(item as Item)}
+            pagination={{
+              currentPage: data?.meta.currentPage ?? 1,
+              lastPage: data?.meta.lastPage ?? 1,
+              total: data?.meta.totalCountofRegisters ?? 0,
+              pageSize,
+              onPageChange: setPage,
+              onPageSizeChange: setPageSize,
+            }}
           />
-          <Box maxW="250px">
-            <select
-              className="chakra-select css-1o9g701"
-              onChange={(e) =>
-                setSelectedCategoryId(
-                  e.target.value ? parseInt(e.target.value) : undefined,
-                )
+          <ConfirmModal
+            isOpen={isDeleteOpen}
+            onClose={() => setIsDeleteOpen(false)}
+            onConfirm={() => {
+              if (itemToDelete) {
+                useDeleteMutation.mutateAsync(itemToDelete.id);
+                setIsDeleteOpen(false);
               }
-              value={selectedCategoryId || ""}
-            >
-              <option value="">Todas as Categorias</option>
-              {categories?.map((c: Category) => (
-                <option key={c.id} value={c.id}>
-                  {c.description}
-                </option>
-              ))}
-            </select>
-          </Box>
-        </HStack>
+            }}
+            title="Excluir Item"
+            description={`Tem certeza que deseja excluir o item "${itemToDelete?.description}"?`}
+            isPending={useDeleteMutation.isPending}
+          />
 
-        <TableWithPagination
-          data={data?.data ?? []}
-          columns={columns}
-          onEdit={(item) => handleEdit(item as Item)}
-          onDelete={(item) => handleDeleteClick(item as Item)}
-          pagination={{
-            currentPage: data?.meta.currentPage ?? 1,
-            lastPage: data?.meta.lastPage ?? 1,
-            total: data?.meta.totalCountofRegisters ?? 0,
-            pageSize,
-            onPageChange: setPage,
-            onPageSizeChange: setPageSize,
-          }}
-        />
-        <ConfirmModal
-          isOpen={isDeleteOpen}
-          onClose={() => setIsDeleteOpen(false)}
-          onConfirm={() => {
-            if (itemToDelete) {
-              useDeleteMutation.mutateAsync(itemToDelete.id);
-              setIsDeleteOpen(false);
-            }
-          }}
-          title="Excluir Item"
-          description={`Tem certeza que deseja excluir o item "${itemToDelete?.description}"?`}
-          isPending={useDeleteMutation.isPending}
-        />
+          <EditModal<Item>
+            isOpen={isEditOpen}
+            onClose={() => setIsEditOpen(false)}
+            initialData={selectedItem}
+            fields={itemFields}
+            title="Editar Item"
+            onSubmit={handleSaveEdit}
+            isPending={useEditMutation.isPending}
+          />
 
-        <EditModal<Item>
-          isOpen={isEditOpen}
-          onClose={() => setIsEditOpen(false)}
-          initialData={selectedItem}
-          fields={itemFields}
-          title="Editar Item"
-          onSubmit={handleSaveEdit}
-          isPending={useEditMutation.isPending}
-        />
-
-        <CreateModal<FormItem>
-          isOpen={isCreateOpen}
-          onClose={() => setIsCreateOpen(false)}
-          onSubmit={(data) => useAddMutation.mutateAsync(data)}
-          schema={schemaItem}
-          fields={itemFields}
-          title="Cadastrar Item"
-          isPending={useAddMutation.isPending}
-        />
-      </VStack>
-    </Center>
+          <CreateModal<FormItem>
+            isOpen={isCreateOpen}
+            onClose={() => setIsCreateOpen(false)}
+            onSubmit={(data) => useAddMutation.mutateAsync(data)}
+            schema={schemaItem}
+            fields={itemFields}
+            title="Cadastrar Item"
+            isPending={useAddMutation.isPending}
+          />
+        </VStack>
+      </Center>
+    </ProtectedRoute>
   );
 }

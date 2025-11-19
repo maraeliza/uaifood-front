@@ -24,6 +24,7 @@ import { useAddUser } from "@/hooks/user/useAdd";
 import { useEditUser } from "@/hooks/user/useEdit";
 import { useDeleteUser } from "@/hooks/user/useDelete";
 import { FormUser, schemaUserEdit } from "@/utils/schema";
+import { ProtectedRoute } from "@/context/ProtectedRoute";
 
 export default function UsersPage() {
   const [page, setPage] = useState(1);
@@ -75,79 +76,81 @@ export default function UsersPage() {
     );
 
   return (
-    <Center py={10}>
-      <VStack spacing={6} align="stretch">
-        <HStack justify="space-between">
-          <Heading size="lg">Usuários</Heading>
-          <Button colorScheme="teal" onClick={() => setIsCreateOpen(true)}>
-            Novo Usuário
-          </Button>
-        </HStack>
+    <ProtectedRoute roles={["ADMIN"]}>
+      <Center py={10}>
+        <VStack spacing={6} align="stretch">
+          <HStack justify="space-between">
+            <Heading size="lg">Usuários</Heading>
+            <Button colorScheme="teal" onClick={() => setIsCreateOpen(true)}>
+              Novo Usuário
+            </Button>
+          </HStack>
 
-        <Box maxW="400px">
-          <Input
-            placeholder="Filtrar por nome ou email..."
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            size="md"
-            bg="white"
-            _dark={{ bg: "gray.700" }}
-            focusBorderColor="teal.400"
+          <Box maxW="400px">
+            <Input
+              placeholder="Filtrar por nome ou email..."
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              size="md"
+              bg="white"
+              _dark={{ bg: "gray.700" }}
+              focusBorderColor="teal.400"
+            />
+          </Box>
+
+          <TableWithPagination
+            data={data?.data ?? []}
+            columns={columns}
+            onEdit={handleEdit}
+            onDelete={handleDeleteClick}
+            pagination={{
+              currentPage: data?.meta.currentPage ?? 1,
+              lastPage: data?.meta.lastPage ?? 1,
+              total: data?.meta.totalCountofRegisters ?? 0,
+              pageSize,
+              onPageChange: setPage,
+              onPageSizeChange: setPageSize,
+            }}
           />
-        </Box>
 
-        <TableWithPagination
-          data={data?.data ?? []}
-          columns={columns}
-          onEdit={handleEdit}
-          onDelete={handleDeleteClick}
-          pagination={{
-            currentPage: data?.meta.currentPage ?? 1,
-            lastPage: data?.meta.lastPage ?? 1,
-            total: data?.meta.totalCountofRegisters ?? 0,
-            pageSize,
-            onPageChange: setPage,
-            onPageSizeChange: setPageSize,
-          }}
-        />
+          {/* Modal de confirmação de exclusão */}
+          <ConfirmModal
+            isOpen={isDeleteOpen}
+            onClose={() => setIsDeleteOpen(false)}
+            onConfirm={() => {
+              if (itemToDelete) {
+                deleteMutation.mutateAsync(itemToDelete.id);
+                setIsDeleteOpen(false);
+              }
+            }}
+            title="Excluir Usuário"
+            description={`Tem certeza que deseja excluir "${itemToDelete?.name}"?`}
+            isPending={deleteMutation.isPending}
+          />
 
-        {/* Modal de confirmação de exclusão */}
-        <ConfirmModal
-          isOpen={isDeleteOpen}
-          onClose={() => setIsDeleteOpen(false)}
-          onConfirm={() => {
-            if (itemToDelete) {
-              deleteMutation.mutateAsync(itemToDelete.id);
-              setIsDeleteOpen(false);
-            }
-          }}
-          title="Excluir Usuário"
-          description={`Tem certeza que deseja excluir "${itemToDelete?.name}"?`}
-          isPending={deleteMutation.isPending}
-        />
+          {/* Modal de edição */}
+          <EditModal<User>
+            isOpen={isEditOpen}
+            onClose={() => setIsEditOpen(false)}
+            initialData={selectedItem}
+            fields={fields}
+            title="Editar Usuário"
+            onSubmit={handleSaveEdit}
+            isPending={editMutation.isPending}
+          />
 
-        {/* Modal de edição */}
-        <EditModal<User>
-          isOpen={isEditOpen}
-          onClose={() => setIsEditOpen(false)}
-          initialData={selectedItem}
-          fields={fields}
-          title="Editar Usuário"
-          onSubmit={handleSaveEdit}
-          isPending={editMutation.isPending}
-        />
-
-        {/* Modal de criação */}
-        <CreateModal<FormUser>
-          isOpen={isCreateOpen}
-          onClose={() => setIsCreateOpen(false)}
-          onSubmit={(data) => addMutation.mutateAsync(data)}
-          schema={schemaUserEdit}
-          fields={fields}
-          title="Cadastrar Usuário"
-          isPending={addMutation.isPending}
-        />
-      </VStack>
-    </Center>
+          {/* Modal de criação */}
+          <CreateModal<FormUser>
+            isOpen={isCreateOpen}
+            onClose={() => setIsCreateOpen(false)}
+            onSubmit={(data) => addMutation.mutateAsync(data)}
+            schema={schemaUserEdit}
+            fields={fields}
+            title="Cadastrar Usuário"
+            isPending={addMutation.isPending}
+          />
+        </VStack>
+      </Center>
+    </ProtectedRoute>
   );
 }

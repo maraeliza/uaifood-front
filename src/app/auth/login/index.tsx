@@ -53,9 +53,9 @@ export default function LoginComponent() {
     await mutationLogin.mutateAsync(data, {
       onSuccess: (res: LoginResponse) => {
         const { access_token, user } = res;
-
-        setCookie(null, "token", access_token, {
-          maxAge: 60 * 60 * 24 * 7, // 7 dias
+        console.log(user);
+        setCookie(null, "uaifoodtoken", access_token, {
+          maxAge: 60 * 60 * 24 * 7,
           path: "/",
           sameSite: "lax",
           secure: process.env.NODE_ENV === "production",
@@ -70,7 +70,7 @@ export default function LoginComponent() {
           duration: 3000,
           isClosable: true,
         });
-        router.push("/dashboard");
+        router.push(user.role === "ADMIN" ? "/dashboard" : "/market");
       },
     });
   };

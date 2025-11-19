@@ -13,28 +13,37 @@ import {
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import NextLink from "next/link";
 import { useAuth } from "@/context/AuthProvider";
+import { destroyCookie } from "nookies";
 
 interface NavItem {
   label: string;
   href: string;
-  roles?: ("ADMIN" | "CLIENT")[]; // roles que podem ver
+  roles?: ("ADMIN" | "CLIENT")[];
 }
 
 const navItems: NavItem[] = [
   { label: "Home", href: "/" },
   { label: "Categorias", href: "/categories", roles: ["ADMIN"] },
   { label: "Usuários", href: "/users", roles: ["ADMIN"] },
-  { label: "Pedidos", href: "/orders", roles: ["ADMIN", "CLIENT"] },
+  { label: "Pedidos", href: "/orders", roles: ["ADMIN"] },
+  { label: "Itens", href: "/items", roles: ["ADMIN"] },
+  { label: "Dashboard", href: "/dashboard", roles: ["ADMIN"] },
+  { label: "Pedido", href: "/order", roles: ["CLIENT"] },
+  { label: "Mercado", href: "/market", roles: ["CLIENT"] },
+  { label: "Checkout", href: "/checkout", roles: ["CLIENT"] },
+  { label: "Meu Perfil", href: "/my-profile", roles: ["ADMIN", "CLIENT"] },
 ];
 
 export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { user } = useAuth();
-
+  const { user, logout } = useAuth();
   const filteredItems = navItems.filter(
-    (item) => !item.roles || (user?.role && item.roles.includes(user?.role)),
+    (item) => !item.roles || (user?.role && item.roles.includes(user?.role))
   );
-
+  const handleLogout = () => {
+    destroyCookie(null, "uaifoodtoken");
+    logout();
+  };
   if (!user?.role) return null;
 
   return (
@@ -58,6 +67,12 @@ export default function Navbar() {
               </Link>
             </NextLink>
           ))}
+          <Link
+            onClick={handleLogout}
+            _hover={{ textDecoration: "none", color: "teal.200" }}
+          >
+            Sair
+          </Link>
         </HStack>
 
         <IconButton
@@ -82,6 +97,12 @@ export default function Navbar() {
                 <Link onClick={onClose}>{item.label}</Link>
               </NextLink>
             ))}
+            <Link
+              onClick={handleLogout}
+              _hover={{ textDecoration: "none", color: "teal.200" }}
+            >
+              Sair
+            </Link>
           </Stack>
         </Box>
       )}

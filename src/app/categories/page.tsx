@@ -24,6 +24,7 @@ import { FormCategory, schemaCategory } from "@/utils/schema";
 import { useDebounce } from "use-debounce";
 import { columns, fields } from "./metaData";
 import { Category } from "@/interfaces/category";
+import { ProtectedRoute } from "@/context/ProtectedRoute";
 
 export default function Page() {
   const [page, setPage] = useState(1);
@@ -71,73 +72,75 @@ export default function Page() {
     );
 
   return (
-    <Center py={10}>
-      <VStack spacing={6} align="stretch">
-        <HStack justify="space-between">
-          <Heading size="lg">Categorias</Heading>
-          <Button colorScheme="teal" onClick={() => setIsCreateOpen(true)}>
-            Nova Categoria
-          </Button>
-        </HStack>
-        <Box maxW="400px">
-          <Input
-            placeholder="Filtrar por descrição..."
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            size="md"
-            bg="white"
-            _dark={{ bg: "gray.700" }}
-            focusBorderColor="teal.400"
+    <ProtectedRoute roles={["ADMIN"]}>
+      <Center py={10}>
+        <VStack spacing={6} align="stretch">
+          <HStack justify="space-between">
+            <Heading size="lg">Categorias</Heading>
+            <Button colorScheme="teal" onClick={() => setIsCreateOpen(true)}>
+              Nova Categoria
+            </Button>
+          </HStack>
+          <Box maxW="400px">
+            <Input
+              placeholder="Filtrar por descrição..."
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              size="md"
+              bg="white"
+              _dark={{ bg: "gray.700" }}
+              focusBorderColor="teal.400"
+            />
+          </Box>
+          <TableWithPagination
+            data={data?.categories ?? []}
+            columns={columns}
+            onEdit={(item) => handleEdit(item)}
+            onDelete={(item) => handleDeleteClick(item)}
+            pagination={{
+              currentPage: data?.pageData.currentPage ?? 1,
+              lastPage: data?.pageData.lastPage ?? 1,
+              total: data?.pageData.totalCountofRegisters ?? 0,
+              pageSize,
+              onPageChange: setPage,
+              onPageSizeChange: setPageSize,
+            }}
           />
-        </Box>
-        <TableWithPagination
-          data={data?.categories ?? []}
-          columns={columns}
-          onEdit={(item) => handleEdit(item)}
-          onDelete={(item) => handleDeleteClick(item)}
-          pagination={{
-            currentPage: data?.pageData.currentPage ?? 1,
-            lastPage: data?.pageData.lastPage ?? 1,
-            total: data?.pageData.totalCountofRegisters ?? 0,
-            pageSize,
-            onPageChange: setPage,
-            onPageSizeChange: setPageSize,
-          }}
-        />
-        <ConfirmModal
-          isOpen={isDeleteOpen}
-          onClose={() => setIsDeleteOpen(false)}
-          onConfirm={() => {
-            if (itemToDelete) {
-              useDeleteMutation.mutateAsync(itemToDelete.id);
-              setIsDeleteOpen(false);
-            }
-          }}
-          title="Excluir Categoria"
-          description={`Tem certeza que deseja excluir "${itemToDelete?.description}"?`}
-          isPending={useDeleteMutation.isPending}
-        />
+          <ConfirmModal
+            isOpen={isDeleteOpen}
+            onClose={() => setIsDeleteOpen(false)}
+            onConfirm={() => {
+              if (itemToDelete) {
+                useDeleteMutation.mutateAsync(itemToDelete.id);
+                setIsDeleteOpen(false);
+              }
+            }}
+            title="Excluir Categoria"
+            description={`Tem certeza que deseja excluir "${itemToDelete?.description}"?`}
+            isPending={useDeleteMutation.isPending}
+          />
 
-        <EditModal<Category>
-          isOpen={isEditOpen}
-          onClose={() => setIsEditOpen(false)}
-          initialData={selectedItem}
-          fields={fields}
-          title="Editar Categoria"
-          onSubmit={handleSaveEdit}
-          isPending={useEditMutation.isPending}
-        />
+          <EditModal<Category>
+            isOpen={isEditOpen}
+            onClose={() => setIsEditOpen(false)}
+            initialData={selectedItem}
+            fields={fields}
+            title="Editar Categoria"
+            onSubmit={handleSaveEdit}
+            isPending={useEditMutation.isPending}
+          />
 
-        <CreateModal<FormCategory>
-          isOpen={isCreateOpen}
-          onClose={() => setIsCreateOpen(false)}
-          onSubmit={(data) => useAddMutation.mutateAsync(data)}
-          schema={schemaCategory}
-          fields={fields}
-          title="Cadastrar Categoria"
-          isPending={useAddMutation.isPending}
-        />
-      </VStack>
-    </Center>
+          <CreateModal<FormCategory>
+            isOpen={isCreateOpen}
+            onClose={() => setIsCreateOpen(false)}
+            onSubmit={(data) => useAddMutation.mutateAsync(data)}
+            schema={schemaCategory}
+            fields={fields}
+            title="Cadastrar Categoria"
+            isPending={useAddMutation.isPending}
+          />
+        </VStack>
+      </Center>
+    </ProtectedRoute>
   );
 }

@@ -25,6 +25,7 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import { mockData } from "./data";
+import { ProtectedRoute } from "@/context/ProtectedRoute";
 
 ChartJS.register(
   CategoryScale,
@@ -32,7 +33,7 @@ ChartJS.register(
   BarElement,
   Title,
   Tooltip,
-  Legend,
+  Legend
 );
 
 export default function AdminDashboard() {
@@ -52,58 +53,60 @@ export default function AdminDashboard() {
   };
 
   return (
-    <Box p={6}>
-      <Heading mb={6}>Dashboard Administrativo</Heading>
+    <ProtectedRoute roles={["ADMIN"]}>
+      <Box p={6}>
+        <Heading mb={6}>Dashboard Administrativo</Heading>
 
-      <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6} mb={6}>
-        <Stat p={4} shadow="md" borderRadius="md">
-          <StatLabel>Total de Itens</StatLabel>
-          <StatNumber>{data?.totalItems}</StatNumber>
-        </Stat>
-        <Stat p={4} shadow="md" borderRadius="md">
-          <StatLabel>Total de Pedidos</StatLabel>
-          <StatNumber>{data?.totalOrders}</StatNumber>
-        </Stat>
-        <Stat p={4} shadow="md" borderRadius="md">
-          <StatLabel>Total de Categorias</StatLabel>
-          <StatNumber>{data?.totalCategories}</StatNumber>
-        </Stat>
-      </SimpleGrid>
+        <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6} mb={6}>
+          <Stat p={4} shadow="md" borderRadius="md">
+            <StatLabel>Total de Itens</StatLabel>
+            <StatNumber>{data?.totalItems}</StatNumber>
+          </Stat>
+          <Stat p={4} shadow="md" borderRadius="md">
+            <StatLabel>Total de Pedidos</StatLabel>
+            <StatNumber>{data?.totalOrders}</StatNumber>
+          </Stat>
+          <Stat p={4} shadow="md" borderRadius="md">
+            <StatLabel>Total de Categorias</StatLabel>
+            <StatNumber>{data?.totalCategories}</StatNumber>
+          </Stat>
+        </SimpleGrid>
 
-      <Box mb={6} p={4} shadow="md" borderRadius="md" bg="white">
-        <Heading size="md" mb={4}>
-          Pedidos por Categoria
-        </Heading>
-        <Bar data={barData} />
-      </Box>
+        <Box mb={6} p={4} shadow="md" borderRadius="md" bg="white">
+          <Heading size="md" mb={4}>
+            Pedidos por Categoria
+          </Heading>
+          <Bar data={barData} />
+        </Box>
 
-      <Box p={4} shadow="md" borderRadius="md" bg="white">
-        <Heading size="md" mb={4}>
-          Pedidos Recentes
-        </Heading>
-        <Table variant="simple">
-          <Thead>
-            <Tr>
-              <Th>ID</Th>
-              <Th>Cliente</Th>
-              <Th>Total de Itens</Th>
-              <Th>Status</Th>
-              <Th>Criado em</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {data?.recentOrders.map((order) => (
-              <Tr key={order.id}>
-                <Td>{order.id}</Td>
-                <Td>{order.clientName}</Td>
-                <Td>{order.totalItems}</Td>
-                <Td>{order.status}</Td>
-                <Td>{new Date(order.createdAt).toLocaleDateString()}</Td>
+        <Box p={4} shadow="md" borderRadius="md" bg="white">
+          <Heading size="md" mb={4}>
+            Pedidos Recentes
+          </Heading>
+          <Table variant="simple">
+            <Thead>
+              <Tr>
+                <Th>ID</Th>
+                <Th>Cliente</Th>
+                <Th>Total de Itens</Th>
+                <Th>Status</Th>
+                <Th>Criado em</Th>
               </Tr>
-            ))}
-          </Tbody>
-        </Table>
+            </Thead>
+            <Tbody>
+              {data?.recentOrders.map((order) => (
+                <Tr key={order.id}>
+                  <Td>{order.id}</Td>
+                  <Td>{order.clientName}</Td>
+                  <Td>{order.totalItems}</Td>
+                  <Td>{order.status}</Td>
+                  <Td>{new Date(order.createdAt).toLocaleDateString()}</Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </Box>
       </Box>
-    </Box>
+    </ProtectedRoute>
   );
 }
