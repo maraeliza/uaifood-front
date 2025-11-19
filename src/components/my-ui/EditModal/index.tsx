@@ -91,7 +91,11 @@ export function EditModal<T extends Record<string, any>>({
           <Button variant="ghost" onClick={onClose}>
             Cancelar
           </Button>
-          <Button colorScheme="blue" onClick={handleSubmit} isLoading={isPending}>
+          <Button
+            colorScheme="blue"
+            onClick={handleSubmit}
+            isLoading={isPending}
+          >
             Salvar
           </Button>
         </ModalFooter>

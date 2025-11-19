@@ -14,7 +14,7 @@ import {
   Select,
   Text,
 } from "@chakra-ui/react";
-import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
+import { EditIcon, DeleteIcon, ViewIcon } from "@chakra-ui/icons";
 import { PaginationControls } from "../Pagination";
 import { GenericTableProps } from "@/interfaces/common";
 
@@ -24,6 +24,7 @@ export function TableWithPagination<T extends Record<string, any>>({
   onEdit,
   onDelete,
   pagination,
+  onView,
 }: GenericTableProps<T>) {
   const bg = useColorModeValue("white", "gray.800");
   const border = useColorModeValue("gray.200", "gray.700");
@@ -60,10 +61,7 @@ export function TableWithPagination<T extends Record<string, any>>({
             </Tr>
           ) : (
             data.map((item, index) => (
-              <Tr
-                key={index}
-                _hover={{ bg: hoverBg }}
-              >
+              <Tr key={index} _hover={{ bg: hoverBg }}>
                 {columns.map((col) => (
                   <Td key={String(col.key)}>
                     {col.render
@@ -74,6 +72,16 @@ export function TableWithPagination<T extends Record<string, any>>({
 
                 <Td>
                   <Flex justify="center" gap={2}>
+                    {onView && (
+                      <IconButton
+                        aria-label="Visualizar"
+                        icon={<ViewIcon />}
+                        size="sm"
+                        colorScheme="teal"
+                        variant="ghost"
+                        onClick={() => onView(item)}
+                      />
+                    )}
                     <IconButton
                       aria-label="Editar"
                       icon={<EditIcon />}

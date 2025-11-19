@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react'
-import { Box, Input, List, ListItem, Text } from '@chakra-ui/react'
-import { Item } from '@/utils/interfaces'
+import React, { useState, useEffect } from "react";
+import { Box, Input, List, ListItem, Text } from "@chakra-ui/react";
+import { Item } from "@/utils/interfaces";
 
 interface AutocompleteInputProps {
-  value: string
-  onChange: (value: number) => void
-  items: Item[]
-  placeholder: string
-  errorMessage?: string
-  handleRemove?: () => void
+  value: string;
+  onChange: (value: number) => void;
+  items: Item[];
+  placeholder: string;
+  errorMessage?: string;
+  handleRemove?: () => void;
 }
 
 const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
@@ -18,36 +18,36 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
   placeholder,
   handleRemove,
 }) => {
-  const [inputValue, setInputValue] = useState<string>(value)
-  const [filteredItems, setFilteredItems] = useState<Item[]>([])
-  const [isFocused, setIsFocused] = useState(false)
+  const [inputValue, setInputValue] = useState<string>(value);
+  const [filteredItems, setFilteredItems] = useState<Item[]>([]);
+  const [isFocused, setIsFocused] = useState(false);
 
   useEffect(() => {
-    if (inputValue === '') {
-      setFilteredItems(items.slice(0, 5))
-      if (handleRemove) handleRemove()
+    if (inputValue === "") {
+      setFilteredItems(items.slice(0, 5));
+      if (handleRemove) handleRemove();
     } else {
       setFilteredItems(
         items.filter((item) =>
           item?.name?.toLowerCase().includes(inputValue?.toLowerCase()),
         ),
-      )
+      );
     }
-  }, [handleRemove, inputValue, items])
+  }, [handleRemove, inputValue, items]);
 
   const handleItemClick = (item: Item) => {
-    onChange(item.id)
-    setInputValue(item.name)
-    setIsFocused(false)
-  }
+    onChange(item.id);
+    setInputValue(item.name);
+    setIsFocused(false);
+  };
 
   const handleFocus = () => {
-    setIsFocused(true)
-  }
+    setIsFocused(true);
+  };
 
   const handleBlur = () => {
-    setTimeout(() => setIsFocused(false), 200)
-  }
+    setTimeout(() => setIsFocused(false), 200);
+  };
 
   return (
     <Box width="100%">
@@ -74,7 +74,7 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
               key={item.id}
               p={2}
               cursor="pointer"
-              _hover={{ backgroundColor: 'gray.100' }}
+              _hover={{ backgroundColor: "gray.100" }}
               onClick={() => handleItemClick(item)}
             >
               <Text>{item.name}</Text>
@@ -83,7 +83,7 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
         </List>
       )}
     </Box>
-  )
-}
+  );
+};
 
-export default AutocompleteInput
+export default AutocompleteInput;

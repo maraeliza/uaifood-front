@@ -78,13 +78,14 @@ export default function Page() {
       </Center>
     );
 
-  const categoryOptions = categories?.map((c:Category) => ({
-    label: c.description,
-    value: c.id.toString(),
-  })) || [];
+  const categoryOptions =
+    categories?.map((c: Category) => ({
+      label: c.description,
+      value: c.id.toString(),
+    })) || [];
 
   const itemFields = fields.map((field) =>
-    field.key === "categoryId" ? { ...field, options: categoryOptions } : field
+    field.key === "categoryId" ? { ...field, options: categoryOptions } : field,
   );
 
   return (
@@ -113,13 +114,13 @@ export default function Page() {
               className="chakra-select css-1o9g701"
               onChange={(e) =>
                 setSelectedCategoryId(
-                  e.target.value ? parseInt(e.target.value) : undefined
+                  e.target.value ? parseInt(e.target.value) : undefined,
                 )
               }
               value={selectedCategoryId || ""}
             >
               <option value="">Todas as Categorias</option>
-              {categories?.map((c:Category) => (
+              {categories?.map((c: Category) => (
                 <option key={c.id} value={c.id}>
                   {c.description}
                 </option>

@@ -5,15 +5,14 @@ import { api } from "@/lib/axios";
 import { useToast } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { ItemAdd } from "@/interfaces/item"; 
-
+import { ItemAdd } from "@/interfaces/item";
 
 export function useAddItem() {
   const toast = useToast();
 
   return useMutation({
     mutationFn: async (item: ItemAdd) => {
-      const url = "/items/"; 
+      const url = "/items/";
       return await api.post(url, item);
     },
     onSuccess: () => {
@@ -26,7 +25,7 @@ export function useAddItem() {
         position: "top-right",
       });
       queryClient.invalidateQueries({
-        queryKey: ["items"], 
+        queryKey: ["items"],
       });
     },
     onError: (error: AxiosError<{ message: string }>) => {

@@ -1,40 +1,40 @@
-import { tableAnatomy } from '@chakra-ui/anatomy'
-import { createMultiStyleConfigHelpers } from '@chakra-ui/react'
+import { tableAnatomy } from "@chakra-ui/anatomy";
+import { createMultiStyleConfigHelpers } from "@chakra-ui/react";
 
 const { definePartsStyle, defineMultiStyleConfig } =
-  createMultiStyleConfigHelpers(tableAnatomy.keys)
+  createMultiStyleConfigHelpers(tableAnatomy.keys);
 
 const variantRounded = definePartsStyle(() => {
   return {
     table: {
-      borderWidth: '1px',
-      borderStyle: 'solid',
-      borderColor: '#e3e3e3',
-      boxShadow: 'sm',
-      borderRadius: '12px', // Arredondamento geral da tabela
+      borderWidth: "1px",
+      borderStyle: "solid",
+      borderColor: "#e3e3e3",
+      boxShadow: "sm",
+      borderRadius: "12px", // Arredondamento geral da tabela
     },
     thead: {
       th: {
-        borderBottomWidth: '1px',
+        borderBottomWidth: "1px",
         _first: {
-          borderTopLeftRadius: '12px', // Arredonda o canto superior esquerdo
+          borderTopLeftRadius: "12px", // Arredonda o canto superior esquerdo
         },
         _last: {
-          borderTopRightRadius: '12px', // Arredonda o canto superior direito
+          borderTopRightRadius: "12px", // Arredonda o canto superior direito
         },
       },
     },
     tbody: {
       tr: {
-        borderBottomWidth: '1px',
-        borderColor: '#e3e3e3',
+        borderBottomWidth: "1px",
+        borderColor: "#e3e3e3",
         _last: {
           td: {
             _first: {
-              borderBottomLeftRadius: '12px', // Arredonda o canto inferior esquerdo
+              borderBottomLeftRadius: "12px", // Arredonda o canto inferior esquerdo
             },
             _last: {
-              borderBottomRightRadius: '12px', // Arredonda o canto inferior direito
+              borderBottomRightRadius: "12px", // Arredonda o canto inferior direito
             },
           },
         },
@@ -42,16 +42,16 @@ const variantRounded = definePartsStyle(() => {
     },
     tfoot: {
       tr: {
-        '&:last-of-type': {
+        "&:last-of-type": {
           th: { borderBottomWidth: 0 },
         },
       },
     },
-  }
-})
+  };
+});
 
 export const tableTheme = defineMultiStyleConfig({
   variants: {
     megaue: variantRounded,
   },
-})
+});

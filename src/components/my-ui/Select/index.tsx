@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Input,
@@ -9,18 +9,18 @@ import {
   List,
   ListItem,
   Tooltip,
-} from '@chakra-ui/react'
-import { FiX } from 'react-icons/fi'
-import { Item } from '@/utils/interfaces'
+} from "@chakra-ui/react";
+import { FiX } from "react-icons/fi";
+import { Item } from "@/utils/interfaces";
 
 interface SearchableSelectProps {
-  options: Item[]
-  value: number | undefined
-  onChange: (value: number) => void
-  placeholder: string
-  setClear: React.Dispatch<React.SetStateAction<boolean>>
-  clear: boolean
-  disabled?: boolean
+  options: Item[];
+  value: number | undefined;
+  onChange: (value: number) => void;
+  placeholder: string;
+  setClear: React.Dispatch<React.SetStateAction<boolean>>;
+  clear: boolean;
+  disabled?: boolean;
 }
 
 const SearchableSelect: React.FC<SearchableSelectProps> = ({
@@ -32,66 +32,66 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
   value,
   disabled,
 }) => {
-  const [searchTerm, setSearchTerm] = useState(value ? '' : placeholder)
-  const [filteredOptions, setFilteredOptions] = useState<Item[]>([])
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState(value ? "" : placeholder);
+  const [filteredOptions, setFilteredOptions] = useState<Item[]>([]);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
-    if (searchTerm === '') {
-      setFilteredOptions(options.slice(0, 5))
+    if (searchTerm === "") {
+      setFilteredOptions(options.slice(0, 5));
     } else {
       setFilteredOptions(
         options.filter((option) =>
           option.name.toLowerCase().includes(searchTerm.toLowerCase()),
         ),
-      )
+      );
     }
-  }, [options, searchTerm])
+  }, [options, searchTerm]);
 
   useEffect(() => {
     if (clear) {
-      setSearchTerm('')
-      setIsDropdownOpen(false)
-      setClear(false)
-      onChange(0)
+      setSearchTerm("");
+      setIsDropdownOpen(false);
+      setClear(false);
+      onChange(0);
     }
-  }, [clear, onChange, setClear])
+  }, [clear, onChange, setClear]);
 
   useEffect(() => {
     if (value !== 0) {
-      const option = options.find((opt) => opt.id === value)
-      setSearchTerm(option?.name || '')
+      const option = options.find((opt) => opt.id === value);
+      setSearchTerm(option?.name || "");
     }
-  }, [options, value])
+  }, [options, value]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value)
-    setIsDropdownOpen(e.target.value.length > 0)
-  }
+    setSearchTerm(e.target.value);
+    setIsDropdownOpen(e.target.value.length > 0);
+  };
 
   const handleOptionSelect = (option: Item) => {
-    onChange(option.id)
-    setSearchTerm(option.name)
-    setIsDropdownOpen(false)
-  }
+    onChange(option.id);
+    setSearchTerm(option.name);
+    setIsDropdownOpen(false);
+  };
 
   const handleClearSearch = () => {
-    setSearchTerm('')
-    setIsDropdownOpen(false)
-    onChange(0)
-  }
+    setSearchTerm("");
+    setIsDropdownOpen(false);
+    onChange(0);
+  };
   return (
-    <Tooltip label={disabled ? 'Não é possível alterar' : ''}>
+    <Tooltip label={disabled ? "Não é possível alterar" : ""}>
       <Box sx={{ opacity: disabled ? 0.5 : 1 }}>
         <VStack spacing={2} align="stretch">
-          <HStack spacing={2} alignItems={'center'} justifyContent={'center'}>
+          <HStack spacing={2} alignItems={"center"} justifyContent={"center"}>
             <Input
               mb={2}
               size="lg"
               value={searchTerm}
               onChange={handleInputChange}
               placeholder={placeholder}
-              _focus={{ borderColor: 'blue.500' }}
+              _focus={{ borderColor: "blue.500" }}
               borderRadius="md"
               paddingRight="40px"
               disabled={disabled}
@@ -105,7 +105,7 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
                 variant="ghost"
                 colorScheme="red"
                 position="absolute"
-                alignSelf={'center'}
+                alignSelf={"center"}
                 onClick={handleClearSearch}
                 aria-label="Limpar pesquisa"
               />
@@ -131,7 +131,7 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
                     key={option.id}
                     padding={2}
                     cursor="pointer"
-                    _hover={{ bgColor: 'gray.100' }}
+                    _hover={{ bgColor: "gray.100" }}
                     onClick={() => handleOptionSelect(option)}
                   >
                     <Text>{option.name}</Text>
@@ -160,7 +160,7 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
         </VStack>
       </Box>
     </Tooltip>
-  )
-}
+  );
+};
 
-export default SearchableSelect
+export default SearchableSelect;

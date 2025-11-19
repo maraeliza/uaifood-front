@@ -68,7 +68,7 @@ export function CreateModal<T extends Record<string, any>>({
                     field.key as Path<T>,
                     field.type === "number" || field.type === "select"
                       ? { valueAsNumber: true }
-                      : {}
+                      : {},
                   )}
                 />
                 <FormErrorMessage>

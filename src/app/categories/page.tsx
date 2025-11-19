@@ -36,7 +36,7 @@ export default function Page() {
   const [filter, setFilter] = useState("");
   const [debouncedFilter] = useDebounce(filter, 500);
 
-  const { data, isLoading, isError, refetch } = useCategories({
+  const { data, isLoading, isError } = useCategories({
     page,
     limit: pageSize,
     description: debouncedFilter,

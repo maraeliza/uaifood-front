@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ChakraProviderClient } from "../context/ChakraProvider";
+import Navbar from "@/components/my-ui/Navbar";
+import { AuthProvider } from "@/context/AuthProvider";
 
 export const metadata: Metadata = {
   title: "UaiFood",
@@ -16,7 +18,10 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <ChakraProviderClient>
-          {children}
+          <AuthProvider>
+            <Navbar />
+            <main>{children}</main>
+          </AuthProvider>
         </ChakraProviderClient>
       </body>
     </html>

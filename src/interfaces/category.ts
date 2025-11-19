@@ -7,7 +7,7 @@ export interface CategoryAdd {
 export interface CategoryEdit extends CategoryAdd {
   id: number;
 }
-export interface Category extends CategoryEdit{
+export interface Category extends CategoryEdit {
   createdAt: string;
   updatedAt: string;
 }

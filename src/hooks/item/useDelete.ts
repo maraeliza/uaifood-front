@@ -6,11 +6,11 @@ import { useToast } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
-export function useDeleteItem() { 
+export function useDeleteItem() {
   const toast = useToast();
 
   return useMutation({
-    mutationFn: async (itemId: number) => { 
+    mutationFn: async (itemId: number) => {
       const url = "/items/" + itemId;
       return await api.delete(url);
     },

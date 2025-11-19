@@ -19,9 +19,11 @@ export const schemaRecoverPassword = z.object({
   }),
 });
 export const schemaCategory = z.object({
-  description: z.string().min(3, { message: "O nome da categoria é obrigatório" }),
-  color: z.string().optional()
-})
+  description: z
+    .string()
+    .min(3, { message: "O nome da categoria é obrigatório" }),
+  color: z.string().optional(),
+});
 export const schemaAddress = z.object({
   id: z.number().int().positive().optional(),
   street: z.string().min(3, { message: "A rua é obrigatória" }),
@@ -69,10 +71,33 @@ export const schemaUserEdit = z.object({
   }),
 });
 export const schemaItem = z.object({
-  description: z.string().min(3, { message: "A descrição do item é obrigatória (mínimo 3 caracteres)." }),
-  unitPrice: z.number().min(0.01, { message: "O preço unitário deve ser um valor positivo." }),
-  categoryId: z.number().int().min(1, { message: "A categoria é obrigatória." }),
-  image: z.string().url({ message: "A imagem deve ser uma URL válida." }).optional().or(z.literal('')),
+  description: z
+    .string()
+    .min(3, {
+      message: "A descrição do item é obrigatória (mínimo 3 caracteres).",
+    }),
+  unitPrice: z
+    .number()
+    .min(0.01, { message: "O preço unitário deve ser um valor positivo." }),
+  categoryId: z
+    .number()
+    .int()
+    .min(1, { message: "A categoria é obrigatória." }),
+  image: z
+    .string()
+    .url({ message: "A imagem deve ser uma URL válida." })
+    .optional()
+    .or(z.literal("")),
+});
+
+export const schemaRegister = z.object({
+  name: z.string().min(2, "Nome é obrigatório"),
+  email: z.string().email("Email inválido"),
+  phone: z.string().min(10, "Telefone inválido"),
+  password: z.string().min(8, "Senha deve ter no mínimo 8 caracteres"),
+  confirmPassword: z.string().min(8, {
+    message: "A confirmação de senha deve ter pelo menos 8 caracteres",
+  }),
 });
 
 export type FormItem = z.infer<typeof schemaItem>;
@@ -81,4 +106,5 @@ export type FormCategory = z.infer<typeof schemaCategory>;
 export type FormUserEdit = z.infer<typeof schemaUserEdit>;
 export type FormUser = z.infer<typeof schemaUserCadastro>;
 export type FormLogin = z.infer<typeof schemaLogin>;
+export type FormRegister = z.infer<typeof schemaRegister>;
 export type FormRecover = z.infer<typeof schemaRecoverPassword>;

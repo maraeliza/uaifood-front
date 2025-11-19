@@ -1,20 +1,20 @@
 "use client";
 
 import { queryClient } from "@/context/ChakraProvider";
-import { ItemEdit } from "@/interfaces/item"; 
+import { ItemEdit } from "@/interfaces/item";
 import { api } from "@/lib/axios";
 import { useToast } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
-
-export function useEditItem() { // 💡 1. Nome do hook ajustado
+export function useEditItem() {
+  // 💡 1. Nome do hook ajustado
   const toast = useToast();
 
   return useMutation({
     mutationFn: async (item: ItemEdit) => {
-      const url = "/items/" + item.id; 
-      return await api.put(url, item); 
+      const url = "/items/" + item.id;
+      return await api.put(url, item);
     },
     onSuccess: () => {
       toast({
@@ -26,7 +26,7 @@ export function useEditItem() { // 💡 1. Nome do hook ajustado
         position: "top-right",
       });
       queryClient.invalidateQueries({
-        queryKey: ["items"], 
+        queryKey: ["items"],
       });
     },
     onError: (error: AxiosError<{ message: string }>) => {
