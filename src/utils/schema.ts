@@ -68,6 +68,14 @@ export const schemaUserEdit = z.object({
     message: "Celular inválido, siga o formato (XX) XXXXX-XXXX",
   }),
 });
+export const schemaItem = z.object({
+  description: z.string().min(3, { message: "A descrição do item é obrigatória (mínimo 3 caracteres)." }),
+  unitPrice: z.number().min(0.01, { message: "O preço unitário deve ser um valor positivo." }),
+  categoryId: z.number().int().min(1, { message: "A categoria é obrigatória." }),
+  image: z.string().url({ message: "A imagem deve ser uma URL válida." }).optional().or(z.literal('')),
+});
+
+export type FormItem = z.infer<typeof schemaItem>;
 
 export type FormCategory = z.infer<typeof schemaCategory>;
 export type FormUserEdit = z.infer<typeof schemaUserEdit>;

@@ -45,8 +45,6 @@ export default function Page() {
   const useEditMutation = useEditCategory();
   const useDeleteMutation = useDeleteCategory();
 
-  
-
   function handleEdit(item: Category) {
     setSelectedItem(item);
     setIsEditOpen(true);

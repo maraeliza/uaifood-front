@@ -64,7 +64,12 @@ export function CreateModal<T extends Record<string, any>>({
                 <Input
                   type={field.type || "text"}
                   placeholder={field.placeholder}
-                  {...register(field.key as unknown as Path<T>)}
+                  {...register(
+                    field.key as Path<T>,
+                    field.type === "number" || field.type === "select"
+                      ? { valueAsNumber: true }
+                      : {}
+                  )}
                 />
                 <FormErrorMessage>
                   {errors[field.key]?.message as string}
