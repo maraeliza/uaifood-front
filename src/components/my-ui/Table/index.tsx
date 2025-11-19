@@ -11,28 +11,20 @@ import {
   IconButton,
   useColorModeValue,
   Flex,
+  Select,
+  Text,
 } from "@chakra-ui/react";
 import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
+import { GenericTableProps } from "@/utils/interface";
+import { PaginationControls } from "../Pagination";
 
-interface Column<T> {
-  key: keyof T;
-  header: string;
-}
-
-interface GenericTableProps<T> {
-  data: T[];
-  columns: Column<T>[];
-  onEdit: (item: T) => void;
-  onDelete: (item: T) => void;
-}
-
-export function GenericTable<T extends Record<string, any>>({
+export function TableWithPagination<T extends Record<string, any>>({
   data,
   columns,
   onEdit,
   onDelete,
+  pagination,
 }: GenericTableProps<T>) {
-
   const bg = useColorModeValue("white", "gray.800");
   const border = useColorModeValue("gray.200", "gray.700");
 
@@ -47,6 +39,7 @@ export function GenericTable<T extends Record<string, any>>({
       overflowX="auto"
     >
       <Table variant="simple" size="md">
+        {/* Cabeçalho */}
         <Thead bg={useColorModeValue("gray.50", "gray.700")}>
           <Tr>
             {columns.map((col) => (
@@ -58,6 +51,7 @@ export function GenericTable<T extends Record<string, any>>({
           </Tr>
         </Thead>
 
+        {/* Corpo da tabela */}
         <Tbody>
           {data.length === 0 ? (
             <Tr>
@@ -67,13 +61,19 @@ export function GenericTable<T extends Record<string, any>>({
             </Tr>
           ) : (
             data.map((item, index) => (
-              <Tr key={index} _hover={{ bg: useColorModeValue("gray.50", "gray.700") }}>
+              <Tr
+                key={index}
+                _hover={{ bg: useColorModeValue("gray.50", "gray.700") }}
+              >
                 {columns.map((col) => (
                   <Td key={String(col.key)}>
-                    {String(item[col.key])}
+                    {col.render
+                      ? col.render(item[col.key], item)
+                      : String(item[col.key])}
                   </Td>
                 ))}
 
+                {/* Ações */}
                 <Td>
                   <Flex justify="center" gap={2}>
                     <IconButton
@@ -100,6 +100,33 @@ export function GenericTable<T extends Record<string, any>>({
           )}
         </Tbody>
       </Table>
+      {pagination && (
+        <Flex mt={4} justify="space-between" align="center">
+          <Flex gap={2} align="center">
+            <Text>Itens por página:</Text>
+            <Select
+              size="sm"
+              width="80px"
+              value={pagination.pageSize}
+              onChange={(e) =>
+                pagination.onPageSizeChange(Number(e.target.value))
+              }
+            >
+              {[5, 10, 20, 50].map((size) => (
+                <option key={size} value={size}>
+                  {size}
+                </option>
+              ))}
+            </Select>
+          </Flex>
+
+          <PaginationControls
+            currentPage={pagination.currentPage}
+            lastPage={pagination.lastPage}
+            onPageChange={pagination.onPageChange}
+          />
+        </Flex>
+      )}
     </Box>
   );
 }
