@@ -28,7 +28,7 @@ const navItems: NavItem[] = [
   { label: "Pedidos", href: "/orders", roles: ["ADMIN"] },
   { label: "Itens", href: "/items", roles: ["ADMIN"] },
   { label: "Dashboard", href: "/dashboard", roles: ["ADMIN"] },
-  { label: "Pedido", href: "/order", roles: ["CLIENT"] },
+  { label: "Meus Pedidos", href: "/my-orders", roles: ["CLIENT"] },
   { label: "Mercado", href: "/market", roles: ["CLIENT"] },
   { label: "Checkout", href: "/checkout", roles: ["CLIENT"] },
   { label: "Meu Perfil", href: "/my-profile", roles: ["ADMIN", "CLIENT"] },
@@ -38,7 +38,7 @@ export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { user, logout } = useAuth();
   const filteredItems = navItems.filter(
-    (item) => !item.roles || (user?.role && item.roles.includes(user?.role))
+    (item) => !item.roles || (user?.role && item.roles.includes(user?.role)),
   );
   const handleLogout = () => {
     destroyCookie(null, "uaifoodtoken");

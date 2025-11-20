@@ -38,12 +38,16 @@ export interface PaginationData {
   totalCountofRegisters: number;
   lastPage: number;
 }
-
+export interface Option {
+  id: number
+  name: string
+}
 export interface Field<T> {
   key: keyof T | string;
   label: string;
   placeholder?: string;
   type?: string;
+  options?: Option[]
 }
 
 export interface CreateModalProps<T> {
@@ -96,29 +100,13 @@ export interface OrderItem {
 
 export interface Order {
   id: number;
-  client: {
-    id: number;
-    name: string;
-  };
-  createdBy: {
-    id: number;
-    name: string;
-  };
+  clientId: number;
   status: string;
   paymentMethod: PaymentMethod;
-  orderItems: OrderItem[];
   createdAt: string;
   updatedAt: string;
 }
 
-export interface GetOrderResponse {
-  data: Order[];
-  meta: {
-    currentPage: number;
-    lastPage: number;
-    totalCountofRegisters: number;
-  };
-}
 export type UserRole = "ADMIN" | "CLIENT" | null;
 
 export interface UserData {

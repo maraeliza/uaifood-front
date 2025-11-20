@@ -71,11 +71,9 @@ export const schemaUserEdit = z.object({
   }),
 });
 export const schemaItem = z.object({
-  description: z
-    .string()
-    .min(3, {
-      message: "A descrição do item é obrigatória (mínimo 3 caracteres).",
-    }),
+  description: z.string().min(3, {
+    message: "A descrição do item é obrigatória (mínimo 3 caracteres).",
+  }),
   unitPrice: z
     .number()
     .min(0.01, { message: "O preço unitário deve ser um valor positivo." }),

@@ -4,7 +4,7 @@ import { GetServerSidePropsContext } from "next";
 import { ApiResponseError } from "@/utils/interface";
 
 export function setupApiClient(
-  ctx: GetServerSidePropsContext | undefined = undefined
+  ctx: GetServerSidePropsContext | undefined = undefined,
 ) {
   let cookies;
 
@@ -39,7 +39,7 @@ export function setupApiClient(
     },
     (error) => {
       return Promise.reject(error);
-    }
+    },
   );
 
   api.interceptors.response.use(
@@ -56,7 +56,7 @@ export function setupApiClient(
         window.location.href = "/login";
       }
       return Promise.reject(error);
-    }
+    },
   );
 
   return api;

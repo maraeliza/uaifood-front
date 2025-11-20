@@ -3,51 +3,30 @@
 import { useState } from "react";
 import { Spinner, Center, Text, VStack, Heading } from "@chakra-ui/react";
 import { TableWithPagination } from "@/components/my-ui/Table";
+import { columns } from "./metaData";
 import { ConfirmModal } from "@/components/my-ui/ConfirmModal";
 import { Order } from "@/interfaces/common";
 import { useDeleteOrder } from "@/hooks/orders/useDelete";
-import { useEditOrder } from "@/hooks/orders/useEdit";
 import { ViewItemsModal } from "./ViewItems";
 import { ProtectedRoute } from "@/context/ProtectedRoute";
-import { useOrders } from "@/hooks/orders/usePagered";
-import { columns } from "./metaData";
+import { useMyOrders } from "@/hooks/orders/useMyOrders";
+import { useAuth } from "@/context/AuthProvider";
 
 export default function OrdersPage() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isViewOpen, setIsViewOpen] = useState(false);
-
-  const [isEditOpen, setIsEditOpen] = useState(false);
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [orderToDelete, setOrderToDelete] = useState<Order | null>(null);
-
-  const { data, isLoading, isError } = useOrders({
+  const { user } = useAuth();
+  const { data, isLoading, isError } = useMyOrders({
     page,
     limit: pageSize,
+    userId: user?.id || 0,
   });
-
-  const useDeleteMutation = useDeleteOrder();
-  const useEditMutation = useEditOrder();
 
   function handleView(order: Order) {
     setSelectedOrder(order);
     setIsViewOpen(true);
-  }
-
-  function handleEdit(order: Order) {
-    setSelectedOrder(order);
-    setIsEditOpen(true);
-  }
-
-  function handleSaveEdit(updated: Order) {
-    useEditMutation.mutateAsync(updated);
-  }
-
-  function handleDeleteClick(order: Order) {
-    setOrderToDelete(order);
-    setIsDeleteOpen(true);
   }
 
   if (isLoading)
@@ -65,8 +44,8 @@ export default function OrdersPage() {
     );
 
   return (
-    <ProtectedRoute roles={["ADMIN"]}>
-      <Center py={10} px={10}>
+    <ProtectedRoute roles={["CLIENT"]}>
+      <Center py={10}>
         <VStack spacing={6} align="stretch" w="full">
           <Heading size="lg">Pedidos</Heading>
 
@@ -74,8 +53,7 @@ export default function OrdersPage() {
             data={data?.data ?? []}
             columns={columns}
             onView={handleView}
-            onEdit={handleEdit}
-            onDelete={handleDeleteClick}
+            onDelete={() => {}}
             pagination={{
               currentPage: data?.meta.currentPage ?? 1,
               lastPage: data?.meta.lastPage ?? 1,
@@ -84,30 +62,13 @@ export default function OrdersPage() {
               onPageChange: setPage,
               onPageSizeChange: setPageSize,
             }}
+            onEdit={() => {}}
           />
-
-          {/* VIEW MODAL */}
           <ViewItemsModal
             isOpen={isViewOpen}
             onClose={() => setIsViewOpen(false)}
             items={[]}
           />
-
-          {/* DELETE MODAL */}
-          <ConfirmModal
-            isOpen={isDeleteOpen}
-            onClose={() => setIsDeleteOpen(false)}
-            onConfirm={() => {
-              if (orderToDelete) {
-                useDeleteMutation.mutateAsync(orderToDelete.id);
-                setIsDeleteOpen(false);
-              }
-            }}
-            title="Excluir Pedido"
-            description={`Tem certeza que deseja excluir o pedido #${orderToDelete?.id}?`}
-            isPending={useDeleteMutation.isPending}
-          />
-
         </VStack>
       </Center>
     </ProtectedRoute>

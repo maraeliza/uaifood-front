@@ -6,14 +6,16 @@ import { useQuery } from "@tanstack/react-query";
 
 async function getCategories(): Promise<Category[]> {
   try {
-    const response = await api.get("/categories/all").then((res) => res.data);
-    const categories: Category[] = response.data;
+    const categories: Category[] = await api
+      .get("/categories/all")
+      .then((res) => res.data); // pega o array diretamente
     return categories;
   } catch (error) {
     console.error("Erro buscando categorias:", error);
     return [];
   }
 }
+
 
 export function useAllCategories() {
   return useQuery({

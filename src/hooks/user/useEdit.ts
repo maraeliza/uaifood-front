@@ -13,7 +13,9 @@ export function useEditUser() {
   return useMutation({
     mutationFn: async (item: UserEdit) => {
       const url = "/users/" + item.id;
-      return await api.put(url, item);
+      console.log(url)
+      const response =  await api.put(url, item);
+      console.log(response)
     },
     onSuccess: () => {
       toast({

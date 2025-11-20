@@ -5,7 +5,6 @@ import { format } from "date-fns";
 
 export const columns: readonly Column<Order>[] = [
   { key: "id", header: "ID" },
-  { key: "clientId", header: "ID do Cliente" },
   {
     key: "status",
     header: "Status",

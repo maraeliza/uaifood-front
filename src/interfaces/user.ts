@@ -6,6 +6,7 @@ export interface UserAdd {
   email: string;
   phone: string;
   address?: Address;
+  addressId?:number;
 }
 
 export interface UserEdit extends UserAdd {

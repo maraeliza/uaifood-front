@@ -81,12 +81,12 @@ export default function UsersPage() {
         <VStack spacing={6} align="stretch">
           <HStack justify="space-between">
             <Heading size="lg">Usuários</Heading>
-            <Button colorScheme="teal" onClick={() => setIsCreateOpen(true)}>
+            {/* <Button colorScheme="teal" onClick={() => setIsCreateOpen(true)}>
               Novo Usuário
-            </Button>
+            </Button> */}
           </HStack>
 
-          <Box maxW="400px">
+          {/* <Box maxW="400px">
             <Input
               placeholder="Filtrar por nome ou email..."
               value={filter}
@@ -96,7 +96,7 @@ export default function UsersPage() {
               _dark={{ bg: "gray.700" }}
               focusBorderColor="teal.400"
             />
-          </Box>
+          </Box> */}
 
           <TableWithPagination
             data={data?.data ?? []}

@@ -2,6 +2,7 @@
 
 import { queryClient } from "@/context/ChakraProvider";
 import { ItemAdd } from "@/interfaces/item";
+import { OrderAdd } from "@/interfaces/order";
 import { api } from "@/lib/axios";
 import { useToast } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
@@ -11,7 +12,7 @@ export function useAddOrder() {
   const toast = useToast();
 
   return useMutation({
-    mutationFn: async (item: ItemAdd) => {
+    mutationFn: async (item: OrderAdd) => {
       const url = "/orders/";
       return await api.post(url, item);
     },

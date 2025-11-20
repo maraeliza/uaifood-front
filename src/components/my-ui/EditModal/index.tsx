@@ -11,6 +11,7 @@ import {
   FormLabel,
   Input,
   VStack,
+  Select,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { ColorInput } from "../ColorInput";
@@ -59,6 +60,35 @@ export function EditModal<T extends Record<string, any>>({
             {fields.map((field) => {
               const value = values[String(field.key)] ?? "";
 
+              // Select
+              if (field.type === "select" && field.options) {
+                return (
+                  <FormControl key={String(field.key)}>
+                    <FormLabel>{field.label}</FormLabel>
+                    <Select
+                      placeholder={field.placeholder || "Selecione..."}
+                      value={value}
+                      onChange={(e) =>
+                        handleChange(
+                          field.key,
+                          field.options![0] &&
+                            typeof field.options![0].id === "number"
+                            ? Number(e.target.value)
+                            : e.target.value
+                        )
+                      }
+                    >
+                      {field.options.map((option) => (
+                        <option key={option.id} value={option.id}>
+                          {option.name}
+                        </option>
+                      ))}
+                    </Select>
+                  </FormControl>
+                );
+              }
+
+              // Color
               if (field.type === "color") {
                 return (
                   <FormControl key={String(field.key)}>
@@ -72,6 +102,7 @@ export function EditModal<T extends Record<string, any>>({
                 );
               }
 
+              // Default input
               return (
                 <FormControl key={String(field.key)}>
                   <FormLabel>{field.label}</FormLabel>

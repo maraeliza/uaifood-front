@@ -4,26 +4,25 @@ import { Item, GetItemResponse } from "@/interfaces/item";
 import { PaginationData } from "@/interfaces/common";
 import { api } from "@/lib/axios";
 import { useQuery } from "@tanstack/react-query";
+import { GetOrderResponse, OrderEdit } from "@/interfaces/order";
 
 interface Props {
   page: number;
   limit: number;
-  description?: string;
-  categoryId?: number;
+  userId: number;
 }
 
 async function getItems({
   page,
   limit,
-  description,
-  categoryId,
-}: Props): Promise<GetItemResponse> {
+  userId,
+}: Props): Promise<GetOrderResponse> {
   try {
     const response = await api
-      .get("/orders/my", { params: { page, limit, description, categoryId } })
+      .get("/orders/my?userId="+userId, { params: { page, limit } })
       .then((res) => res.data);
 
-    const data: Item[] = response.data;
+    const data: OrderEdit[] = response.data;
 
     const meta: PaginationData = {
       currentPage: response.meta.page,
@@ -38,19 +37,19 @@ async function getItems({
     return {
       data: [],
       meta: {
-        currentPage: 0,
+        currentPage: 1,
         registerPerPage: 0,
         totalCountofRegisters: 0,
-        lastPage: 0,
+        lastPage: 1,
       },
     };
   }
 }
 
-export function useMyOrders({ page, limit, description, categoryId }: Props) {
+export function useMyOrders({ page, limit, userId }: Props) {
   return useQuery({
-    queryKey: ["my-orders", { page, limit, description, categoryId }],
+    queryKey: ["my-orders", { page, limit, userId }],
     refetchOnWindowFocus: false,
-    queryFn: () => getItems({ page, limit, description, categoryId }),
+    queryFn: () => getItems({ page, limit, userId }),
   });
 }

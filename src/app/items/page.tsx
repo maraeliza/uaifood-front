@@ -27,6 +27,7 @@ import { columns, fields } from "./metaData";
 import { useAllCategories } from "@/hooks/category/useAll";
 import { Category } from "@/interfaces/category";
 import { ProtectedRoute } from "@/context/ProtectedRoute";
+import { Option } from "@/interfaces/common";
 
 export default function Page() {
   const [page, setPage] = useState(1);
@@ -79,19 +80,21 @@ export default function Page() {
       </Center>
     );
 
-  const categoryOptions =
+  const categoryOptions: Option[] =
     categories?.map((c: Category) => ({
-      label: c.description,
-      value: c.id.toString(),
+      name: c.description,
+      id: c.id.toString(),
     })) || [];
 
   const itemFields = fields.map((field) =>
     field.key === "categoryId" ? { ...field, options: categoryOptions } : field
   );
+  console.log(itemFields);
+  console.log(categoryOptions);
 
   return (
     <ProtectedRoute roles={["ADMIN"]}>
-      <Center py={10}>
+      <Center py={10} px={10}>
         <VStack spacing={6} align="stretch" w="full" maxW="1200px">
           <HStack justify="space-between">
             <Heading size="lg">Itens</Heading>
@@ -111,24 +114,6 @@ export default function Page() {
               focusBorderColor="teal.400"
               maxW="400px"
             />
-            <Box maxW="250px">
-              <select
-                className="chakra-select css-1o9g701"
-                onChange={(e) =>
-                  setSelectedCategoryId(
-                    e.target.value ? parseInt(e.target.value) : undefined
-                  )
-                }
-                value={selectedCategoryId || ""}
-              >
-                <option value="">Todas as Categorias</option>
-                {categories?.map((c: Category) => (
-                  <option key={c.id} value={c.id}>
-                    {c.description}
-                  </option>
-                ))}
-              </select>
-            </Box>
           </HStack>
 
           <TableWithPagination

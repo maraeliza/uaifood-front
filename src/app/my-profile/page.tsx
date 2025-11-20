@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+
+import { useEffect } from "react";
 import {
   Box,
   Heading,
@@ -11,68 +12,87 @@ import {
   SimpleGrid,
   useToast,
 } from "@chakra-ui/react";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+
 import { ProtectedRoute } from "@/context/ProtectedRoute";
+import { useUserById } from "@/hooks/user/useOrderById";
+import { useAuth } from "@/context/AuthProvider";
+import { useEditUser } from "@/hooks/user/useEdit";
 
-// Tipagem para usuário
-interface Address {
-  street: string;
-  number: string;
-  district: string;
-  city: string;
-  state: string;
-  zipCode: string;
-}
+// ------------------- ZOD SCHEMAS -------------------
 
-interface UserProfile {
-  name: string;
-  email: string;
-  phone: string;
-  address: Address;
-}
+const addressSchema = z.object({
+  street: z.string().min(1, "Rua é obrigatória"),
+  number: z.string().min(1, "Número é obrigatório"),
+  district: z.string().min(1, "Bairro é obrigatório"),
+  city: z.string().min(1, "Cidade é obrigatória"),
+  state: z.string().min(1, "Estado é obrigatório"),
+  zipCode: z.string().min(1, "CEP é obrigatório"),
+});
 
-// Dados mockados iniciais (substituir pela API real depois)
-const mockUser: UserProfile = {
-  name: "Maria Silva",
-  email: "maria@email.com",
-  phone: "11999999999",
-  address: {
-    street: "Rua Exemplo",
-    number: "123",
-    district: "Centro",
-    city: "Uberlândia",
-    state: "MG",
-    zipCode: "38400-000",
-  },
-};
+const userSchema = z.object({
+  name: z.string().min(1, "Nome é obrigatório"),
+  email: z.string().email("Email inválido"),
+  phone: z.string().min(1, "Telefone é obrigatório"),
+  address: addressSchema,
+});
+
+export type UserFormData = z.infer<typeof userSchema>;
+
 
 export default function MyProfile() {
   const toast = useToast();
-  const [userData, setUserData] = useState<UserProfile>(mockUser);
-  const [isSaving, setIsSaving] = useState(false);
+  const { user } = useAuth();
+  const { data } = useUserById({ userId: user?.id || 0 });
+  const useMutationEdit = useEditUser();
 
-  // Atualizar campos do formulário
-  const handleChange = (
-    field: keyof UserProfile | keyof Address,
-    value: string,
-    isAddress = false
-  ) => {
-    if (isAddress) {
-      setUserData((prev) => ({
-        ...prev,
-        address: { ...prev.address, [field]: value },
-      }));
-    } else {
-      setUserData((prev) => ({ ...prev, [field]: value }));
+  const {
+    handleSubmit,
+    register,
+    control,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<UserFormData>({
+    resolver: zodResolver(userSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+      address: {
+        street: "",
+        number: "",
+        district: "",
+        city: "",
+        state: "",
+        zipCode: "",
+      },
+    },
+  });
+  useEffect(() => {
+    if (data) {
+      reset({
+        name: data.name || "",
+        email: data.email || "",
+        phone: data.phone || "",
+        address: {
+          street: data.address?.street || "",
+          number: data.address?.number || "",
+          district: data.address?.district || "",
+          city: data.address?.city || "",
+          state: data.address?.state || "",
+          zipCode: data.address?.zipCode || "",
+        },
+      });
     }
-  };
+  }, [data, reset]);
 
-  // Simulação de salvar
-  const handleSave = async () => {
-    setIsSaving(true);
+  const onSubmit: SubmitHandler<UserFormData> = async (values) => {
+    console.log("AAAAAAAAAAAAAAAAA")
+    console.log(values)
     try {
-      // Aqui você chamaria sua API, exemplo:
-      // await fetch("/api/user/update", { method: "PUT", body: JSON.stringify(userData) })
-      await new Promise((r) => setTimeout(r, 1000)); // mock delay
+      await useMutationEdit(values);
       toast({
         title: "Perfil atualizado com sucesso!",
         status: "success",
@@ -86,42 +106,30 @@ export default function MyProfile() {
         duration: 3000,
         isClosable: true,
       });
-    } finally {
-      setIsSaving(false);
     }
   };
-
+  console.log(errors)
   return (
     <ProtectedRoute roles={["ADMIN", "CLIENT"]}>
       <Box p={6} bg="gray.50" minH="100vh">
         <Heading mb={6}>Meu Perfil</Heading>
         <VStack spacing={6} align="stretch" maxW="800px" mx="auto">
-          {/* Dados pessoais */}
           <Box p={4} bg="white" shadow="md" borderRadius="md">
             <Heading size="md" mb={4}>
               Informações Pessoais
             </Heading>
             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
-              <FormControl>
+              <FormControl isInvalid={!!errors.name}>
                 <FormLabel>Nome</FormLabel>
-                <Input
-                  value={userData.name}
-                  onChange={(e) => handleChange("name", e.target.value)}
-                />
+                <Input {...register("name")} />
               </FormControl>
-              <FormControl>
+              <FormControl isInvalid={!!errors.email}>
                 <FormLabel>Email</FormLabel>
-                <Input
-                  value={userData.email}
-                  onChange={(e) => handleChange("email", e.target.value)}
-                />
+                <Input type="email" {...register("email")} />
               </FormControl>
-              <FormControl>
+              <FormControl isInvalid={!!errors.phone}>
                 <FormLabel>Telefone</FormLabel>
-                <Input
-                  value={userData.phone}
-                  onChange={(e) => handleChange("phone", e.target.value)}
-                />
+                <Input {...register("phone")} />
               </FormControl>
             </SimpleGrid>
           </Box>
@@ -132,56 +140,34 @@ export default function MyProfile() {
               Endereço
             </Heading>
             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
-              <FormControl>
-                <FormLabel>Rua</FormLabel>
-                <Input
-                  value={userData.address.street}
-                  onChange={(e) => handleChange("street", e.target.value, true)}
-                />
-              </FormControl>
-              <FormControl>
-                <FormLabel>Número</FormLabel>
-                <Input
-                  value={userData.address.number}
-                  onChange={(e) => handleChange("number", e.target.value, true)}
-                />
-              </FormControl>
-              <FormControl>
-                <FormLabel>Bairro</FormLabel>
-                <Input
-                  value={userData.address.district}
-                  onChange={(e) =>
-                    handleChange("district", e.target.value, true)
-                  }
-                />
-              </FormControl>
-              <FormControl>
-                <FormLabel>Cidade</FormLabel>
-                <Input
-                  value={userData.address.city}
-                  onChange={(e) => handleChange("city", e.target.value, true)}
-                />
-              </FormControl>
-              <FormControl>
-                <FormLabel>Estado</FormLabel>
-                <Input
-                  value={userData.address.state}
-                  onChange={(e) => handleChange("state", e.target.value, true)}
-                />
-              </FormControl>
-              <FormControl>
-                <FormLabel>CEP</FormLabel>
-                <Input
-                  value={userData.address.zipCode}
-                  onChange={(e) =>
-                    handleChange("zipCode", e.target.value, true)
-                  }
-                />
-              </FormControl>
+              {(
+                [
+                  ["street", "Rua"],
+                  ["number", "Número"],
+                  ["district", "Bairro"],
+                  ["city", "Cidade"],
+                  ["state", "Estado"],
+                  ["zipCode", "CEP"],
+                ] as const
+              ).map(([field, label]) => (
+                <FormControl
+                  key={field}
+                  isInvalid={!!errors.address?.[field]}
+                >
+                  <FormLabel>{label}</FormLabel>
+                  <Input
+                    {...register(`address.${field}` as const)}
+                  />
+                </FormControl>
+              ))}
             </SimpleGrid>
           </Box>
 
-          <Button colorScheme="green" isLoading={isSaving} onClick={handleSave}>
+          <Button
+            colorScheme="green"
+            isLoading={isSubmitting}
+            onClick={handleSubmit(onSubmit)}
+          >
             Salvar Alterações
           </Button>
         </VStack>

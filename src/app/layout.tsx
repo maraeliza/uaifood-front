@@ -27,11 +27,9 @@ export default function RootLayout({
                 as="main"
                 minH="100vh"
                 w="full"
-                maxW="1200px"
-                mx="auto" 
-                px={{ base: 4, md: 8 }}
-                py={{ base: 6, md: 10 }}
-                bg="gray.50" 
+                minW="100vw"
+                mx="auto"
+                bg="gray.50"
                 color="gray.800"
               >
                 {children}

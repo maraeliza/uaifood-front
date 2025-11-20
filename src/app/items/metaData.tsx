@@ -48,11 +48,5 @@ export const fields: Field<ItemAdd>[] = [
     label: "Categoria",
     placeholder: "Selecione a categoria",
     type: "select",
-  },
-  {
-    key: "image",
-    label: "URL da Imagem",
-    placeholder: "Opcional: URL da imagem do item",
-    type: "text",
-  },
+  }
 ];
