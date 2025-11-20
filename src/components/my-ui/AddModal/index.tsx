@@ -16,7 +16,7 @@ import {
   FormErrorMessage,
   Select,
 } from "@chakra-ui/react";
-import { Path, useForm, Controller } from "react-hook-form";
+import { Path, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateModalProps } from "@/interfaces/common";
 import { ColorInput } from "../ColorInput";
@@ -77,19 +77,10 @@ export function CreateModal<T extends Record<string, any>>({
                     ))}
                   </Select>
                 ) : field.type === "color" ? (
-                  <Controller
-                    name={field.key as Path<T>}
-                    control={control} // você precisa extrair control do useForm
-                    defaultValue="" // valor inicial
-                    render={({ field: controllerField }) => (
-                      <ColorInput
-                        value={controllerField.value}
-                        onChange={controllerField.onChange}
-                        placeholder={
-                          field.placeholder || "Digite #RRGGBB ou cor"
-                        }
-                      />
-                    )}
+                  <ColorInput
+                    value={""}
+                    onChange={() => {}}
+                    placeholder={field.placeholder || "Digite #RRGGBB ou cor"}
                   />
                 ) : (
                   <Input

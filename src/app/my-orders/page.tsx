@@ -45,7 +45,7 @@ export default function OrdersPage() {
 
   return (
     <ProtectedRoute roles={["CLIENT"]}>
-      <Center py={10}>
+      <Center py={10} px={10}>
         <VStack spacing={6} align="stretch" w="full">
           <Heading size="lg">Pedidos</Heading>
 
